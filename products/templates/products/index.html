@@ -1,6 +1,6 @@
 {% extends 'base.html' %} <!-- uvoizim sadržaj base.html -->
 
-{% block title %}Home{% endblock title %}   <!-- ovdje se menja title -->
+{% block title %}Home{% endblock title %} <!-- ovdje se menja title -->
 
 {% load static %} <!-- uvoizim static fajle -->
 
@@ -11,7 +11,24 @@
 <!-- blok za sadržaj -->
 {% block content %}
 
-    <h1>Home</h1>
+<div class="container mt-5">
+    {% for product in products %}
+        <div class="card" style="width: 18rem;">
+            {% with product.get_main_image as main_image %}
+            {% if main_image %}
+                <img src="{{ main_image.image.url }}" class="card-img-top" alt="{{ product.name }}">
+            {% else %}
+                <p>Nema slike</p>
+            {% endif %}
+            {% endwith %}
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">Price: {{ product.price }} KM</p>
+            </div>
+        </div>
+    {% endfor %}
+
+</div>
+
 
 {% endblock content %}
-

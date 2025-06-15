@@ -1,8 +1,8 @@
 from django.shortcuts import render
+from .models import Products, Category, SubCategory, ProductImage
 
-# Create your views here.
-from django.shortcuts import render
 
 def home(request):
-    return render(request, 'products/index.html')
+    products = Products.objects.filter(is_active=True)
+    return render(request, 'products/index.html', {'products': products})
 
