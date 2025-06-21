@@ -60,7 +60,14 @@ class Products(models.Model):
 
 # Slike proizvoda
 class ProductImage(models.Model):
-    product = models.ForeignKey(Products, related_name='images', on_delete=models.CASCADE)
+    #polje nije obavezno
+    product = models.ForeignKey(
+        Products,
+        related_name='images',
+        on_delete=models.CASCADE,
+        null=True,       # dozvoljava da u bazi može biti NULL
+        blank=True       # dozvoljava da u Django formama može biti prazno
+    )
     image = models.ImageField(upload_to='products/')
     is_main = models.BooleanField(default=False)  # Označava glavnu sliku
     display_order = models.IntegerField(default=0)

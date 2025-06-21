@@ -127,7 +127,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR /'static', # STATIC FOLDER UNUTAR GLAVNOG PROJEKTA 
-    BASE_DIR /'naziv_aplikacije' /'static', # STATIC FOLDER UNUTAR APLIKAVIJE BLOG
+    BASE_DIR /'products' /'static', # STATIC FOLDER UNUTAR APLIKAVIJE BLOG
 ]  
 
 # media fajlovi
