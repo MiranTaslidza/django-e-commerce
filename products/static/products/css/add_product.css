@@ -1,0 +1,24 @@
+.product{
+    margin-top: 50px;
+}
+.dropzone{
+    height: 600px ;
+}
+
+.drop_mesage{
+    font-size: xx-large;
+    margin-top: 40% !important;
+}
+
+.product, input, select, textarea{
+    width: 100%;
+}
+
+#id_is_active{
+    width: 5%;
+    margin: 0;
+}
+
+.add_prduct h2{
+    margin-left: 40%;
+}

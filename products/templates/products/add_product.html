@@ -5,38 +5,39 @@
 {% load static %} <!-- uvoizim static fajle -->
 
 {% block styles %}
-<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+    <link rel="stylesheet" href="{% static 'products/css/add_product.css' %}" type="text/css"
 {% endblock styles %}
 
 <!-- blok za JS static fajlova -->
 {% block scripts %}
-<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
 {% endblock scripts %}
 
 <!-- blok za sadržaj -->
 {% block content %}
 
-<div class="conntainer">
+<div class="conntainer add_prduct">
 
     <div class="row">
-
-        <div class="col">
+        <h2>Add product</h2>
+        <!-- dropzone -->
+        <div class="col product">
             <form action="/file-upload" class="dropzone" id="my-awesome-dropzone">
                 {% csrf_token %}
-                <div class="dz-message">
+                <div class="dz-message drop_mesage">
                     <span><i class="fa fa-file"></i></span>Drag and drop an image here or click to upload.
                 </div>
-
             </form>
         </div>
 
+        <!-- add form -->
         <div class="col">
-            <h2>Add product</h2>
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.as_p }}
 
-                <button type="submit">Sačuvaj</button>
+                <button class="form-control btn btn-outline-success" type="submit">Sačuvaj</button>
             </form>
         </div>
     </div>
