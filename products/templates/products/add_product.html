@@ -6,43 +6,49 @@
 
 {% block styles %}
     <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
-    <link rel="stylesheet" href="{% static 'products/css/add_product.css' %}" type="text/css"
+    <link rel="stylesheet" href="{% static 'products/css/add_product.css' %}" type="text/css">
 {% endblock styles %}
 
 <!-- blok za JS static fajlova -->
 {% block scripts %}
     <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+    <script src="{% static 'products/js/dropzone.js' %}"></script>
 {% endblock scripts %}
 
 <!-- blok za sadržaj -->
 {% block content %}
 
-<div class="conntainer add_prduct">
+<div class="container add_prduct">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2>Add product</h2>
+    </div>
+  </div>
 
-    <div class="row">
-        <h2>Add product</h2>
-        <!-- dropzone -->
-        <div class="col product">
-            <form action="/file-upload" class="dropzone" id="my-awesome-dropzone">
-                {% csrf_token %}
-                <div class="dz-message drop_mesage">
-                    <span><i class="fa fa-file"></i></span>Drag and drop an image here or click to upload.
-                </div>
-            </form>
+  <div class="row">
+    <!-- Dropzone -->
+    <div class="col-12 col-lg-6 mb-4">
+      <form action="/file-upload" class="dropzone" id="my-awesome-dropzone">
+        {% csrf_token %}
+        <div class="dz-message drop_mesage">
+          <span><i class="fa fa-file"></i></span>
+          Drag and drop an image here or click to upload.
         </div>
-
-        <!-- add form -->
-        <div class="col">
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form.as_p }}
-
-                <button class="form-control btn btn-outline-success" type="submit">Sačuvaj</button>
-            </form>
-        </div>
+      </form>
     </div>
 
+    <!-- Form -->
+    <div class="col-12 col-lg-6 mb-4">
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="form-control btn btn-outline-success" type="submit">Sačuvaj</button>
+      </form>
+    </div>
+  </div>
 </div>
+
+
 
 
 

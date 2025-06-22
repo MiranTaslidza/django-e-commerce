@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Kategorije
 class Category(models.Model):
@@ -60,7 +61,7 @@ class Products(models.Model):
 
 # Slike proizvoda
 class ProductImage(models.Model):
-    #polje nije obavezno
+  
     product = models.ForeignKey(
         Products,
         related_name='images',
@@ -68,6 +69,7 @@ class ProductImage(models.Model):
         null=True,       # dozvoljava da u bazi može biti NULL
         blank=True       # dozvoljava da u Django formama može biti prazno
     )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     image = models.ImageField(upload_to='products/')
     is_main = models.BooleanField(default=False)  # Označava glavnu sliku
     display_order = models.IntegerField(default=0)
