@@ -15,12 +15,17 @@
 <!-- blok za sadržaj -->
 {% block content %}
 
-<div class="container mt-5 overflow-hidden all-prduct">
+<div class="container mt-5 overflow-hidden all-prduct card">
+
   <div class="row">
+
     {% for product in products %}
-    <div class="col-sm-6 col-md-4 mb-4">  <!-- svaka kartica zauzima 1/3 na md ekranima, 1/2 na sm -->
+
+    <!--kartica-->
+    <div class="mt-5 col-xl-2 col-4">  
         <a href="{% url 'product_detail' product.pk %}">
-        <div class="card" style="width: 100%;">  <!-- širina 100% unutar kolone -->
+
+        <div class="cards" >  <!-- za sliku -->
           {% with product.get_main_image as main_image %}
             {% if main_image %}
               <img src="{{ main_image.image.url }}" alt="{{ product.name }}" class="card-img-top">
@@ -34,7 +39,8 @@
               {% endwith %}
             {% endif %}
           {% endwith %}
-          <div class="card-body">
+
+          <div class="card-body"> <!-- za detalje -->
             <hr>
             <h3>{{ product.name }}</h3>
           </div>
