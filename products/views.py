@@ -33,7 +33,6 @@ def productDetail(request, pk):
     product = get_object_or_404(Products, pk=pk)
     return render(request, 'products/productDetail.html', {'product': product})
 
-####################################################################################   
 # update proizvoda
 def updateProduct(request, pk):
     product = get_object_or_404(Products, pk=pk)
@@ -102,7 +101,6 @@ def upload_product_images(request, pk):
 
         return JsonResponse({'images': image_data})
 
-###################################################################################
 # dodavanje dropdown slika
 @csrf_protect
 def file_upload(request):
@@ -132,3 +130,18 @@ def file_upload(request):
     return JsonResponse({'error': 'Dozvoljen je samo POST zahtjev.'}, status=400)
 
 
+# brisanje proizvoda
+def delete_product(request, pk):
+    product = get_object_or_404(Products, pk=pk)
+
+    # Obriši slike sa diska
+    for image in product.images.all():
+        if image.image:
+            image_path = image.image.path
+            if os.path.isfile(image_path):
+                os.remove(image_path)
+
+    # Obriši proizvod (ovo će obrisati i povezane slike u bazi ako imaš ForeignKey sa on_delete=CASCADE)
+    product.delete()
+
+    return redirect('home')
