@@ -109,7 +109,7 @@ def file_upload(request):
 
         # uslov ukolio korisnik nije prijavljen
         if not request.user.is_authenticated:
-            return JsonResponse({'error': 'Morate biti prijavljeni.'}, status=401)
+            return JsonResponse({'error': 'You must be logged in..'}, status=401)
         
         #postavlja priijavljenog korisnika
         user = request.user
@@ -127,7 +127,7 @@ def file_upload(request):
             'image_id': image.id
         })
 
-    return JsonResponse({'error': 'Dozvoljen je samo POST zahtjev.'}, status=400)
+    return JsonResponse({'error': 'Only POST request is allowed.'}, status=400)
 
 
 # brisanje proizvoda

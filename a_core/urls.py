@@ -9,6 +9,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',  include('products.urls')),  # Redirect root URL to admin
+    path('profiles/', include('profiles.urls')),    
 ]
 
 if settings.DEBUG: # Django će servirati medijske fajlove SAMO u developmentu

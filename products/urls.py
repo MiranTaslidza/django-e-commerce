@@ -12,6 +12,4 @@ urlpatterns = [
     path('products/<int:pk>/upload-images/', views.upload_product_images, name='upload_product_images'), # dodavanje novi slika
     path('delete-product/<int:pk>/', views.delete_product, name='delete_product'), # brisanje proizvoda
 
-
-
 ]

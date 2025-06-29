@@ -1,7 +1,12 @@
-.all-prduct img{
-    height: 300px;
+a{
+  color: inherit !important;          /* Naslijedi boju teksta roditelja */
+  text-decoration: none !important;   /* Ukloni podvlačenje */
+} 
+
+.index img{
+  height: 200px;
 }
 
-.all-prduct h3{
-    font-size:large;
+.default_img{
+  height: 140px !important;
 }

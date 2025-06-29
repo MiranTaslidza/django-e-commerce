@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %} <!-- uvoizim sadržaj base.html -->
 
 {% block title %} {{product.name}} {% endblock title %} <!-- ovdje se menja title -->
@@ -16,6 +17,13 @@
 <!-- blok za sadržaj -->
 {% block content %}
 
+{% if user.is_authenticated %}
+<div class="container p-5">
+    <a class="btn btn-outline-primary ms-5" href="{% url 'updateProduct' product.pk %}">Edit</a>
+    <a class="btn btn-outline-danger ms-3" href="{% url 'delete_product' product.pk %}">Delete</a>
+</div>
+{% endif %}
+
 <div class="card-wrapper">
     <div class="card">
         <!-- card left image -->
@@ -24,7 +32,12 @@
 
                 <div class="img-showcase">
                     {% for image in product.images.all %}
-                        <img src="{{ image.image.url }}" alt="{{ product.name }}">
+                        {% if image.is_main %}
+                            <img src="{{ image.image.url }}" alt="{{ product.name }}" class="active">
+                        {% else %}
+                            <img src="{{ image.image.url }}" alt="{{ product.name }}">
+                        {% endif %}
+                        
                     {% endfor %}
                 </div>
 
@@ -78,8 +91,7 @@
 
             <div class="purchase-info mt-5">
                 <input type="number" min="0" value="1">
-                <button type="button" class="btn">
-                    Add to Cart <i class="fas fa-shopping-cart"></i>
+                <button type="button" class="btn"> Add to Cart <i class="fas fa-shopping-cart"></i>
                 </button>
                 <button type="button" class="btn">Compare</button>
             </div>

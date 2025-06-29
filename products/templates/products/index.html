@@ -5,7 +5,7 @@
 {% load static %} <!-- uvoizim static fajle -->
 
 {% block styles %}
-    <link rel="stylesheet" href="{% static 'products/css/index.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'products/css/index.css' %}" type="text/css">
 {% endblock styles %}
 
 <!-- blok za JS static fajlova -->
@@ -22,31 +22,42 @@
     {% for product in products %}
 
     <!--kartica-->
-    <div class="mt-5 col-xl-2 col-4">  
-        <a href="{% url 'product_detail' product.pk %}">
+    <div class="mt-5 col-xl-2 col-4 index">
+      <a href="{% url 'product_detail' product.pk %}">
 
-        <div class="cards" >  <!-- za sliku -->
+        <div class="cards"> <!-- za sliku -->
           {% with product.get_main_image as main_image %}
-            {% if main_image %}
-              <img src="{{ main_image.image.url }}" alt="{{ product.name }}" class="card-img-top">
-            {% else %}
-              {% with product.images.first as first_image %}
-                {% if first_image %}
-                  <img src="{{ first_image.image.url }}" alt="{{ product.name }}" class="card-img-top">
-                {% else %}
-                  <p>Nema slike</p>
-                {% endif %}
-              {% endwith %}
-            {% endif %}
+          {% if main_image %}
+          <img src="{{ main_image.image.url }}" alt="{{ product.name }}" class="card-img-top">
+          {% else %}
+          {% with product.images.first as first_image %}
+          {% if first_image %}
+          <img src="{{ first_image.image.url }}" alt="{{ product.name }}" class="card-img-top">
+          {% else %}
+          <img class="default_img" src="{% static 'img/default_image.png' %}">
+          {% endif %}
+          {% endwith %}
+          {% endif %}
           {% endwith %}
 
           <div class="card-body"> <!-- za detalje -->
             <hr>
-            <h3>{{ product.name }}</h3>
+            <p class="fw-bolder">{{ product.name }}</p>
+            <p>{{ product.price }} $</p>
+
+             <!-- ocjena -->
+            <div class="product-rating mt-5">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+                <span>4.7(21)</span>
+            </div>
           </div>
         </div>
       </a>
-      </div>
+    </div>
     {% endfor %}
   </div>
 </div>
