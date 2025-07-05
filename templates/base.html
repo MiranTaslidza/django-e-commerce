@@ -22,6 +22,18 @@
     <!-- navbar -->
     {% include 'navbar.html' %}
 
+    <!-- prikazivanje poruke -->
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" arialabel="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    <!-- Kraj prikazivanja poruka -->
+
+
     <!-- content -->
      <div class="container mt-3">
         {% block content %}{% endblock %}

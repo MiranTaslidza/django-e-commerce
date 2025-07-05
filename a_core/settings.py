@@ -149,3 +149,18 @@ AUTHENTICATION_BACKENDS = [
     'profiles.backends.EmailOrUsernameModelBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+# podešavanje za slanje maila
+LOGIN_URL = 'login' # preusmjenrenje na login stranicu ako korisnik nije logovan
+LOGOUT_REDIRECT_URL = 'home' # preusmjerenje kada se korisnik odloguje
+LOGIN_REDIRECT_URL = 'home' # preusmjerenje kada se korisnik uloguje
+
+# postavke za slanje maila
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'dr.restful.code@gmail.com'
+EMAIL_HOST_PASSWORD = 'suqjkkeuyfplhkgc'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+

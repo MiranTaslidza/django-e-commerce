@@ -14,7 +14,7 @@ def create_or_save_user_profile(sender, instance, created, **kwargs):
 
 # Briše sliku korisnika kada se profil obriše
 @receiver(post_delete, sender=Profile)
-def delete_profile_image(sender, instance, **kwargs):
-    if instance.profile_image:
-        if os.path.isfile(instance.profile_image.path):
-            os.remove(instance.profile_image.path)  # Briše sliku kada se profil obriše
+def delete_profile_picture(sender, instance, **kwargs):
+    if instance.profile_picture:  # Proverava da li profil ima sliku          
+        if os.path.isfile(instance.profile_picture.path):
+            os.remove(instance.profile_picture.path)  # Briše sliku kada se profil obriše
