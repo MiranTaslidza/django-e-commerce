@@ -145,3 +145,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.ngrok-free.app']
 
+AUTHENTICATION_BACKENDS = [
+    'profiles.backends.EmailOrUsernameModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]

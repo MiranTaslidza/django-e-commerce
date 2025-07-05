@@ -1,0 +1,29 @@
+/* postavljanje slike na pozadinu slika se nalazi u static fajlu logo.gif */
+body {
+  background-image: url('/static/img/logo.gif');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+input.form-control {
+  border: none;
+  border-bottom: 2px solid white;
+  border-radius: 0;
+  background-color: transparent;
+  
+  outline: none;
+}
+
+input.form-control:focus {
+  border-bottom: 2px solid #00bfff; /* npr. plava linija kad je aktivan */
+  box-shadow: none;
+}
+.form-outline .form-control {
+  border: none !important;
+  border-bottom: 2px solid white !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  color: white !important;
+  box-shadow: none !important;
+}
