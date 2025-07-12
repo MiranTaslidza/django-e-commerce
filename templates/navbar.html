@@ -1,51 +1,106 @@
-<nav class="navbar navbar-expand-custom navbar-mainbg">
-    <a class="navbar-brand navbar-logo" href="{% url 'home' %}">
-        {% load static %}
-        <img class="nav-logo " src="{% static 'img/logo.gif' %}" alt="Logo" class="logo">
-    </a>
-    <button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false"
-        aria-label="Toggle navigation">
-        <i class="fas fa-bars text-white"></i>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav ml-auto">
-            <div class="hori-selector">
-                <div class="left"></div>
-                <div class="right"></div>
-            </div>
+{% load static %}
 
-            <li class="nav-item active">
-                <a class="nav-link" href="{% url 'home'%}"><i class="fa-solid fa-house"></i>Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="javascript:void(0);"><i class="far fa-clone"></i>Components</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="javascript:void(0);"><i class="far fa-calendar-alt"></i>Calendar</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="javascript:void(0);"><i class="far fa-chart-bar"></i>Charts</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'add_product' %}"><i class="fa-solid fa-circle-plus"></i>Add Product</a>
-            </li>
+<div class="wrap w-100">
+    <div class="row  m-0 d-none d-md-flex p-3">
 
-            {% if request.user.is_authenticated %}
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'add_product' %}">{{ request.user.username }}</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i>Logout</a>
-            </li>
-            {% else %}
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'login' %}">Login</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'register' %}">Sign Up</a>
-            </li>
-            {% endif %}
+        <!-- Naav 1 -->
+        <div class="col-5 bg-dark rounded-pill">
+            <ul class="d-flex list-unstyled p-2 mt-1 justify-content-start m-0">
+                <li class="nav-item  w-50">
+                    <form class="d-flex">
+                        <input class="form-control ms-2  rounded-pill me-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn rounded-pill btn-sm btn-outline-success ">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg>
+                        </button>
+                    </form>
+                </li>
 
-        </ul>
+
+            </ul>
+        </div>
+
+        <!-- LOGO -->
+        <div class="col-2 bg-transparent px-3">
+            <img class="nav-logo rounded-pill" src="{% static 'img/logo-nav.png' %}" alt="Logo">
+        </div>
+
+        <!-- NAV 2 -->
+        <div class="col-5 bg-dark  rounded-pill">
+            <ul class="d-flex list-unstyled p-2 justify-content-end m-0">
+
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{% url 'home' %}">Home</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#">Link</a>
+                </li>
+
+                {% if request.user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center text-white" href="#" id="userDropdown"
+                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <!-- Profilna slika -->
+                        <img src="{% if request.user.profile.profile_picture %}{{ request.user.profile.profile_picture.url }}{% else %}{% static 'img/default_image.jpg' %}{% endif %}"
+                            alt="Profile" class="rounded-circle me-2"
+                            style="width: 32px; height: 32px; object-fit: cover;">
+                        {{ request.user.username }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end mt-2" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a></li>
+                        <li><a class="dropdown-item"href="{% url 'update_profile' %}"><i class="fa-solid fa-user me-2"></i> Update Profile</a></li>
+                        <li><a class="dropdown-item" href="{% url 'add_product' %}"><i class="fa-solid fa-plus me-2"></i> Add Product</a></li>
+                                        
+                    </ul>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{% url 'login' %}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{% url 'register' %}">Sign Up</a>
+                </li>
+                {% endif %}
+
+            </ul>
+        </div>
     </div>
-</nav>
+
+    <!-- prikaz na malim ekranima -->
+    <nav class="navbar navbar-light bg-primary d-md-none">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Dropdown
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#">Action</a></li>
+                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.files.storage import default_storage
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE) # ime i prezima uzima iz ovog modela 
@@ -28,3 +29,16 @@ class Profile(models.Model):
         return self.user.username
     
     # polje 7 istorija narudzbi se dodaje unutar korpe i uzima se preko serijalizera da prikaže korisniku istoriju narudzbi
+
+    def save(self, *args, **kwargs):
+        """Ako korisnik menja sliku, brišemo staru pre nego šaljemo novu."""
+        try:
+            old_profile = Profile.objects.get(pk=self.pk)
+            if old_profile.profile_picture and old_profile.profile_picture != self.profile_picture:
+                if old_profile.profile_picture.name != "avatar.png":
+                    default_storage.delete(old_profile.profile_picture.path)
+        except Profile.DoesNotExist:
+            pass
+
+        # **OBAVEZNO** zovi parentski save da se upišu polja u bazu:
+        super().save(*args, **kwargs)

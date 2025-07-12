@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm,  ProfileUpdateForm
 from django.contrib.auth import authenticate
 from django.contrib.auth import logout
 from django.contrib.auth import authenticate, login as auth_login
+from .models import Profile
+from django.contrib.auth.decorators import login_required
 
 #login
 def user_login(request):
@@ -116,3 +118,22 @@ def verify_user(request, uidb64, token):
     except (TypeError, ValueError, OverflowError, user.DoesNotExist):
         messages.error(request, 'Invalid verification link.')
         return redirect('home')  # Ili bilo koja druga stranica
+
+
+# Kontroler za ažuriranje profila
+@login_required
+def update_profile(request):
+    if request.method == "POST": # Proveravamo da li korisnik šalje podatke putem POST zahteva.
+        form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile, user=request.user)
+        if form.is_valid():
+            form.save()
+            #return redirect("profile", pk=request.user.profile.pk)
+            return redirect("home")
+    else:
+        form = ProfileUpdateForm(instance=request.user.profile, user=request.user)
+
+    return render(request, "profiles/update_profile.html", {"form": form})
+
+
+
+

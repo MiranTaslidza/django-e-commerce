@@ -1,0 +1,40 @@
+{% extends 'base.html' %} <!-- uvoizim sadržaj base.html -->
+
+{% block title %}Register{% endblock title %} <!-- ovdje se menja title -->
+
+{% load static %} <!-- uvoizim static fajle -->
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'profiles/css/login-register.css' %}" type="text/css">
+
+{% endblock styles %}
+
+<!-- blok za JS static fajlova -->
+{% block scripts %}
+{% endblock scripts %}
+
+<!-- blok za sadržaj -->
+{% block content %}
+
+<div class="container">
+
+    <div class="w-50 mx-auto mt-5 bg-dark text-white p-4" style="border-radius: 15px; opacity: 0.8;">
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% if user.profile.profile_picture %}
+            <img class="w-50 mx-auto mb-5" src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" style="margin-left:25% !important;">
+            {% else %}
+            {% endif %}
+
+            {{ form.as_p }}
+            <button class="form-control btn btn-outline-success" type="submit">Save</button>
+        </form>
+
+    </div>
+
+</div>
+
+
+{% endblock content %}
