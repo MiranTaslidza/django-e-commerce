@@ -1,6 +1,6 @@
 /* postavljanje slike na pozadinu slika se nalazi u static fajlu logo.gif */
 body {
-  background-image: url('/static/img/logo.gif');
+  background-image: url("/static/img/logo.gif");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -11,14 +11,16 @@ input.form-control {
   border-bottom: 2px solid white;
   border-radius: 0;
   background-color: transparent;
-  
   outline: none;
 }
 
+/* Kad je input u fokusu, crta postane plava */
 input.form-control:focus {
-  border-bottom: 2px solid #00bfff; /* npr. plava linija kad je aktivan */
-  box-shadow: none;
+  border-bottom: 2px solid #00bfff; /* plava donja crta */
+  box-shadow: none; /* briše default box-shadow */
+
 }
+
 .form-outline .form-control {
   border: none !important;
   border-bottom: 2px solid white !important;

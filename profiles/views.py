@@ -5,6 +5,11 @@ from django.contrib.auth import logout
 from django.contrib.auth import authenticate, login as auth_login
 from .models import Profile
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from django.urls import reverse
+
 
 #login
 def user_login(request):
@@ -135,5 +140,41 @@ def update_profile(request):
     return render(request, "profiles/update_profile.html", {"form": form})
 
 
+# brisanje profila
+@login_required
+def delete_account(request):
+    if request.method == "POST":
+        user = request.user
+        user.delete()
+        return JsonResponse({"message": "Account deleted"}, status=200)
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+
+# promjena passworda
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()  # Promeni lozinku korisnika
+            update_session_auth_hash(request, user)  # Održava aktivnu sesiju nakon promene lozinke
+            
+            # Slanje email obaveštenja
+            subject = "Password Changed Successfully"
+            message = render_to_string('profiles/password_change_email.html', {
+                'user': user,
+                'login_url': request.build_absolute_uri(reverse('login')),  # Link za prijavu
+            })
+            send_email_notification(subject, message, [user.email])
+            
+            messages.success(request, "Your password has been successfully updated!")
+            return redirect('home')
+        else:
+            messages.error(request, "There was an error changing your password. Please try again.")
+    else:
+        form = PasswordChangeForm(user=request.user)
+    
+    return render(request, 'profiles/change_password.html', {'form': form})
 
 

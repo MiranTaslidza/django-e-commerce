@@ -4,6 +4,7 @@ from .models import Profile
 from django.contrib.auth.forms import UserCreationForm
 
 
+
 # forma za registraciju korisnika
 class CustomUserCreationForm(UserCreationForm):
    
@@ -72,5 +73,7 @@ class ProfileUpdateForm(forms.ModelForm):
             user.save()  # Snimamo User model
             profile.save()  # Snimamo Profile model
         return profile
+
+
 
 

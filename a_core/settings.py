@@ -164,3 +164,12 @@ EMAIL_HOST_USER = 'dr.restful.code@gmail.com'
 EMAIL_HOST_PASSWORD = 'suqjkkeuyfplhkgc'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,  # Minimalna dužina lozinke
+        }
+    },
+    # Ovdje ne stavljaj nikakve dodatne restrikcije kao što je 'NameAndNumberPasswordValidator'
+]
