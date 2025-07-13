@@ -11,11 +11,11 @@ urlpatterns = [
     path("delete/", views.delete_account, name="delete_account"),
     path('user/change_password/', views.change_password, name='change_password'),
 
-     # url resetiranje loozinke
-    path('password_reset/',auth_views.PasswordResetView.as_view(template_name='profiles/password_reset_form.html'), name='password_reset'), #url za reset lozinke
-    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='profiles/password_reset_done.html'),name='password_reset_done'), # url za potvrdu slanja linka za reset lozinke
-    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='profiles/password_reset_confirm.html'),name='password_reset_confirm'), # potvrda reset lozinke
-    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='profiles/password_reset_complete.html'), name='password_reset_complete'), # potvrda reset lozinke
+    # url resetiranje loozinke 
+    path('password_reset/', auth_views.PasswordResetView.as_view(template_name='profiles/password_reset_form.html', html_email_template_name='profiles/password_reset_email.html'), name='password_reset'), # url za slanje e-maila za reset lozuinke
+    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='profiles/password_reset_done.html'),name='password_reset_done'), # poruka korisniku da je poslat mail za reset lozinke
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='profiles/password_reset_confirm.html'),name='password_reset_confirm'), # forma za postavljanje nove lozinke
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='profiles/password_reset_complete.html'), name='password_reset_complete'), # poruka korisniku da je promjenjena lozinka
 
 
 ]

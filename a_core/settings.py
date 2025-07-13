@@ -173,3 +173,5 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     # Ovdje ne stavljaj nikakve dodatne restrikcije kao što je 'NameAndNumberPasswordValidator'
 ]
+
+LOGIN_URL = '/profiles/login/'
