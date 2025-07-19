@@ -1,0 +1,25 @@
+{% extends 'base.html' %} <!-- uvoizim sadržaj base.html -->
+
+{% block title %}Register{% endblock title %} <!-- ovdje se menja title -->
+
+{% load static %} <!-- uvoizim static fajle -->
+
+{% block styles %}
+{% endblock styles %}
+
+<!-- blok za JS static fajlova -->
+{% block scripts %}
+{% endblock scripts %}
+
+<!-- blok za sadržaj -->
+{% block content %}
+<div class="profile-container">
+    <h2>{{ profile.user.username }}'s Profile</h2>
+    <p>Email: {{ profile.user.email }}</p>
+    <p>First Name: {{ profile.first_name }}</p>
+    <p>Last Name: {{ profile.last_name }}</p>
+    <p>Bio: {{ profile.bio }}</p>
+    <p>Location: {{ profile.location }}</p>
+    <p>Website: {{ profile.website }}</p>
+</div>
+{% endblock %}

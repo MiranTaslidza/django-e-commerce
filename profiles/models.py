@@ -13,6 +13,14 @@ class Profile(models.Model):
     #POLJE ZA ISTORIJU KUPLJENI PROIZVODA PREKO KORPE
     birth_date = models.DateField(null=True, blank=True) # datum rođenja
 
+    # Čuva prethodni email korisnika
+    old_email = models.EmailField(blank=True, null=True)  
+    # Privremeno čuva novi email dok ga korisnik ne potvrdi
+    new_email = models.EmailField(blank=True, null=True) 
+    # Provera da li je novi email potvrđen 
+    email_confirmed = models.BooleanField(default=False)  
+
+
     USER_ROLES = [
         ('buyer', 'Kupac'),
         ('seller', 'Prodavac'),

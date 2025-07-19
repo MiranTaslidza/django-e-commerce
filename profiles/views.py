@@ -1,14 +1,22 @@
-from django.shortcuts import render, redirect
-from .forms import CustomUserCreationForm,  ProfileUpdateForm
-from django.contrib.auth import authenticate
-from django.contrib.auth import logout
-from django.contrib.auth import authenticate, login as auth_login
+from django.shortcuts import render, redirect, get_object_or_404
+from .forms import CustomUserCreationForm,  ProfileUpdateForm, ChangeEmailForm
+from django.contrib.auth import authenticate, logout, authenticate, login as auth_login, get_user_model, update_session_auth_hash
 from .models import Profile
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth import update_session_auth_hash
 from django.urls import reverse
+from django.core.signing import Signer, BadSignature, TimestampSigner
+from django.core.mail import EmailMultiAlternatives, send_mail
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes 
+from django.template.loader import render_to_string
+
+
 
 
 #login
@@ -32,13 +40,19 @@ def logout_view(request):
     return redirect('login')
 
 
-# registracija korisnika
-from django.contrib.auth.models import User
-from django.contrib.sites.shortcuts import get_current_site
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
-from django.template.loader import render_to_string
+# detalji profila
+@login_required
+def get_profile(request, pk):
+    profile = Profile.objects.get(pk=pk)
+    context ={
+        'profile':profile
+    }
 
+    return render(request, 'profiles/profile.html', context)
+
+
+
+# registracija korisnika
 def register(request):
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
@@ -80,8 +94,6 @@ def register(request):
 
 
 # kontroiler koji šalje mail korisniku
-from django.core.mail import EmailMultiAlternatives
-
 def send_email_notification(subject, message, recipient_list):
     try:
         email = EmailMultiAlternatives(
@@ -96,12 +108,8 @@ def send_email_notification(subject, message, recipient_list):
     except Exception as e:
         print(f"Failed to send email: {e}")
 
-# kontrioler za verifikaciju korisnika
-from django.utils.http import urlsafe_base64_decode
-from django.contrib.auth import get_user_model
-from django.contrib.auth.tokens import default_token_generator
-from django.contrib import messages
 
+# kontrioler za verifikaciju korisnika
 def verify_user(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode() # Dekodira uidb64
@@ -177,4 +185,183 @@ def change_password(request):
     
     return render(request, 'profiles/change_password.html', {'form': form})
 
+
+
+# Kontroler za promenu emaila
+@login_required
+def change_email(request):
+    """View za prikazivanje i obradu promene emaila."""
+    if request.method == 'POST':
+        form = ChangeEmailForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            new_email = form.cleaned_data['new_email']
+            profile = request.user.profile
+
+            # Sačuvaj novi email privremeno i označi ga kao nepotvrđen
+            profile.new_email = new_email
+            profile.email_confirmed = False
+            profile.save()
+
+            # Generisanje sigurnosnog tokena za potvrdu
+            signer = TimestampSigner()
+            token = signer.sign(request.user.username)
+
+            # Kreiraj link za potvrdu
+            confirm_url = request.build_absolute_uri(
+                reverse('confirm_email_change', kwargs={'token': token})
+            )
+
+            # Kreiraj link za otkazivanje promjene emaila
+            cancel_url = request.build_absolute_uri(
+                reverse('cancel_email_change', kwargs={'token': token})
+            )
+
+            # Slanje emaila na stari email
+            mail_subject = 'Confirm Your Email Change'
+
+            message = render_to_string('profiles/confirm_old_email.html', {
+                'user': request.user,
+                'confirm_url': confirm_url,
+                'cancel_url': cancel_url,
+            })
+
+            send_mail(
+                mail_subject,
+                '',  # Ostavlja se prazno plain text, ili možeš dodati kratku poruku
+                'noreply@mywebsite.com',
+                [profile.user.email],
+                html_message=message
+            )
+
+            messages.success(request, "We have sent a verification link to your old email address.")
+            return redirect('profile', pk=request.user.pk)  # Možete redirektovati na neki drugi URL po potrebi
+
+        else:
+            messages.error(request, "There was an error with the email change. Please try again.")
+    else:
+        form = ChangeEmailForm(user=request.user)
+
+    return render(request, 'profiles/change_email.html', {'form': form})
+
+
+
+# potvrda na starom emailu
+@login_required
+def confirm_old_email(request, token):
+    signer = TimestampSigner()
+    try:
+        # Dešifruj token da dobijemo korisničko ime
+        username = signer.unsign(token, max_age=3600)
+        user = get_object_or_404(User, username=username)
+        
+        if user.profile.email_confirmed:
+            messages.info(request, "Ova promjena e-pošte je već potvrđena.")
+            return redirect('profile', pk=request.user.pk)
+
+        # Generiši novi token za potvrdu novog emaila
+        new_token = signer.sign(user.profile.new_email)
+        new_confirm_url = request.build_absolute_uri(
+            reverse('confirm_new_email', kwargs={'token': new_token})
+        )
+
+        # Generiši cancel URL koristeći originalni token
+        cancel_url = request.build_absolute_uri(
+            reverse('cancel_email_change', kwargs={'token': token})
+        )
+
+        # Ovdje kreiraš dictionary s podacima – to je tvoj "context" za otkazivanje emaila 
+        context = {
+            'user': user,
+            'new_confirm_url': new_confirm_url,
+            'cancel_url': cancel_url,
+        }
+
+        # Ovdje se koristi render_to_string s context-om
+        message = render_to_string('profiles/confirm_new_email.html', context)
+
+        # Pošalji email
+        mail_subject = 'Potvrdi promjenu e-pošte'
+        send_mail(
+            mail_subject,
+            '',  # Ostavlja se prazno plain text, ili možeš dodati kratku poruku
+            'noreply@mywebsite.com',
+            [user.profile.new_email],
+            html_message=message
+        )
+        
+        messages.success(request, "Verifikacijski link je poslan na tvoj novi email.")
+        return redirect('profile', pk=request.user.pk)
+
+    except BadSignature:
+        messages.error(request, "Nevažeći ili istekli token.")
+        return redirect('profile', pk=request.user.pk)
+
+
+
+
+# kontroler za poništavanje promjene emaila
+@login_required
+def cancel_email_change(request, token):
+    """
+    View koja poništava zahtev za promenu emaila. Proverava token (npr. da li pripada
+    trenutnom korisniku) i briše vrednost new_email u profilu.
+    """
+    signer = TimestampSigner()
+    try:
+        # Pretpostavljamo da je token generisan na način da sadrži username.
+        token_username = signer.unsign(token, max_age=3600)  # token važi 1 sat
+        if token_username != request.user.username:
+            messages.error(request, "Invalid cancellation token.")
+            return redirect('profile', pk=request.user.pk)
+    except BadSignature:
+        messages.error(request, "Invalid or expired cancellation link.")
+        return redirect('profile', pk=request.user.pk)
+    
+    # Ako je token validan, poništavamo zahtev
+    profile = request.user.profile
+    profile.new_email = None  # Brišemo privremeno čuvani novi email
+    profile.email_confirmed = False
+    profile.save()
+    
+    messages.success(request, "Your email change request has been cancelled.")
+    return redirect('profile', pk=request.user.pk)
+
+# Kontroler za potvrdu novog emaila
+@login_required
+def confirm_new_email(request, token):
+    """
+    View koji finalizira promjenu emaila. Korisnik klikne na verifikacioni link iz emaila
+    poslanog na novu adresu, a ovdje se token provjerava, stari email se sprema, a email se ažurira.
+    """
+    signer = TimestampSigner()
+    try:
+        # Dešifruj token da dobijemo novu email adresu
+        new_email = signer.unsign(token, max_age=3600)  # Token vrijedi 1 sat
+        user = request.user
+        profile = user.profile
+
+        # Provjeri da li se tokenirani novi email podudara s onim koji je privremeno spremljen
+        if profile.new_email != new_email:
+            messages.error(request, "Token se ne podudara s novom email adresom.")
+            return redirect('profile', pk=user.pk)
+
+        # Sačuvaj trenutnu email adresu u polje old_email, prije ažuriranja
+        profile.old_email = user.email
+        profile.save()
+
+        # Ažuriraj email korisnika
+        user.email = new_email
+        user.save()
+
+        # Označi da je nova email adresa potvrđena i očisti privremeni podatak
+        profile.email_confirmed = True
+        profile.new_email = None
+        profile.save()
+
+        messages.success(request, "Vaša email adresa je uspješno promijenjena!")
+        return redirect('profile', pk=user.pk)
+
+    except BadSignature:
+        messages.error(request, "Nevažeći ili istekli token.")
+        return redirect('profile', pk=request.user.pk)
 

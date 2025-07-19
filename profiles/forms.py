@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from .models import Profile
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ValidationError 
 
 
 
@@ -40,12 +41,11 @@ class ProfileUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ('profile_picture','first_name', 'last_name', 'street', 'postal_code', 'city', 'state', 'phone_number', 'birth_date', 'role')
+        fields = ('profile_picture','first_name', 'last_name', 'street', 'postal_code', 'city', 'state', 'phone_number', 'birth_date')
     
         widgets = {
             'profile_picture': forms.FileInput(attrs={'class': 'form-control-file mb-3'}),
             'birth_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control text-white', 'placeholder': 'YYYY-MM-DD'}),
-            'role': forms.Select(attrs={'class': 'form-select'}),
             'street': forms.TextInput(attrs={'class': 'form-control text-white'}),
             'postal_code': forms.TextInput(attrs={'class': 'form-control text-white'}),
             'city': forms.TextInput(attrs={'class': 'form-control text-white'}),
@@ -76,4 +76,26 @@ class ProfileUpdateForm(forms.ModelForm):
 
 
 
+
+# forma za promjenu email adrese
+class ChangeEmailForm(forms.Form):
+    # polje za unos emaila unutar forme
+    new_email = forms.EmailField(
+        label="New Email",
+        widget=forms.EmailInput(attrs={"class": "form-control", "placeholder": "Enter new email"}),
+    )
+
+    # konstruktor init koji ser poziva kada se kreira forma
+    def __init__(self, user, *args, **kwargs):
+        """Prosljeđujemo korisnika da bismo mogli provjeriti emailove."""
+        self.user = user
+        super().__init__(*args, **kwargs)
+
+    # validacija novog emaila
+    def clean_new_email(self):
+        """Provjera da li novi email već postoji u sistemu."""
+        new_email = self.cleaned_data["new_email"]
+        if User.objects.filter(email=new_email).exists():
+            raise ValidationError("This email is already in use. Please choose another.")
+        return new_email
 
