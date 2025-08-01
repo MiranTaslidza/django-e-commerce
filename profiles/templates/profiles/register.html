@@ -3,6 +3,7 @@
 {% block title %}Register{% endblock title %} <!-- ovdje se menja title -->
 
 {% load static %} <!-- uvoizim static fajle -->
+{% load socialaccount %}
 
 {% block styles %}
 <link rel="stylesheet" href="{% static 'profiles/css/login-register.css' %}" type="text/css">
@@ -60,6 +61,10 @@
                                         <button type="submit" data-mdb-button-init data-mdb-ripple-init
                                             class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">Register</button>
                                     </div>
+
+                                    <div class="d-flex justify-content-center mt-4">
+                                    <a href="{% provider_login_url 'google' process='login' %}" class="text-white btn btn-outline-success mb-4"><i class="fab fa-google fa-lg me-2"> </i> Sign up with google</a>
+                                    </div>  
 
                                     <p class="text-center text-muted mt-5 mb-0">Have already an account? <a href="{% url 'login' %}" class="fw-bold text-white"><u>Login here</u></a></p>
 

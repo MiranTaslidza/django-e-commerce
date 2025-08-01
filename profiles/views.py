@@ -19,7 +19,7 @@ from django.template.loader import render_to_string
 
 
 
-#login
+# login view
 def user_login(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -29,8 +29,13 @@ def user_login(request):
             auth_login(request, user)  # koristi Django login
             return redirect('home')
         else:
-            # možeš dodati poruku da su loši podaci
-            pass
+            # ako su pogrešni username ili password
+            messages.error(request, "Pogrešno korisničko ime ili lozinka.")
+    else:
+        # ako je korisnik možda preusmjeren jer je nalog neaktivan
+        if 'account_inactive' in request.GET:
+            messages.error(request, "Vaš nalog nije aktiviran. Provjerite e‑mail.")
+
     return render(request, 'profiles/login.html')
 
 
@@ -39,6 +44,11 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
+
+
+
+    
+    
 
 # detalji profila
 @login_required
@@ -110,27 +120,36 @@ def send_email_notification(subject, message, recipient_list):
 
 
 # kontrioler za verifikaciju korisnika
+from django.conf import settings
+
 def verify_user(request, uidb64, token):
     try:
-        uid = urlsafe_base64_decode(uidb64).decode() # Dekodira uidb64
-        user = get_user_model().objects.get(pk=uid) # Dobija korisnika na osnovu ID-a
-        if default_token_generator.check_token(user, token): # Proverava token
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = get_user_model().objects.get(pk=uid)
 
-            user.is_active = True # Aktivira korisnika
+        if default_token_generator.check_token(user, token):
+            user.is_active = True
+            user.save()
 
-            user.save() # Čuva promene u bazi podataka
-            messages.success(request, 'Your account has been verified!') # Prikazuje poruku uspeha
-            return redirect('login') # Preusmerava na stranicu za prijavu
-        
-        #‚‚ Ako token nije validan, prikazuje poruku greške
+            # Ako korisnik već ima backend atribut (retko), koristi ga
+            if hasattr(user, 'backend'):
+                backend = user.backend
+            else:
+                # Uzimamo prvi backend iz settings-a
+                backend = settings.AUTHENTICATION_BACKENDS[0]
+
+            auth_login(request, user, backend=backend)
+
+            messages.success(request, 'Your account has been verified!')
+            return redirect('home')
         else:
             messages.error(request, 'The verification link is invalid or has expired.')
-            return redirect('home')  # Ili bilo koja druga stranica
+            return redirect('home')
 
-    # Ako dođe do greške prilikom dekodiranja ili pronalaženja korisnika, prikazuje poruku greške
     except (TypeError, ValueError, OverflowError, user.DoesNotExist):
         messages.error(request, 'Invalid verification link.')
-        return redirect('home')  # Ili bilo koja druga stranica
+        return redirect('home')
+
 
 
 # Kontroler za ažuriranje profila

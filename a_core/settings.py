@@ -31,6 +31,12 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.sites',
+    'allauth',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.account',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,6 +46,7 @@ INSTALLED_APPS = [
     'products',
     'profiles',
 ]
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -47,6 +54,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -146,14 +154,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.ngrok-free.app']
 
 AUTHENTICATION_BACKENDS = [
-    'profiles.backends.EmailOrUsernameModelBackend',
     'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 # podešavanje za slanje maila
-LOGIN_URL = 'login' # preusmjenrenje na login stranicu ako korisnik nije logovan
+LOGIN_URL = '/profiles/login/' # preusmjenrenje na login stranicu ako korisnik nije logovan
 LOGOUT_REDIRECT_URL = 'home' # preusmjerenje kada se korisnik odloguje
-LOGIN_REDIRECT_URL = 'home' # preusmjerenje kada se korisnik uloguje
+LOGIN_REDIRECT_URL = '/' # preusmjerenje kada se korisnik uloguje
 
 # postavke za slanje maila
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -175,3 +183,45 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LOGIN_URL = '/profiles/login/'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',            # standardni
+    'allauth.account.auth_backends.AuthenticationBackend',  # allauth
+]
+# prisilna verifikacija e maila i auto signup
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+SOCIALACCOUNT_AUTO_SIGNUP = True
+
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/home/'
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/profiles/login/'  # ili /home/ ili neka tvoja
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/home/'  # nakon logina
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
+
+
+
+
+
+
+
+# disable default allauth templates redirecta
+LOGIN_REDIRECT_URL = '/'       # ili 'home'
+SOCIALACCOUNT_LOGIN_ON_GET = True
+ACCOUNT_ADAPTER = 'profiles.adapters.CustomAccountAdapter'
+SOCIALACCOUNT_ADAPTER   = 'profiles.adapters.CustomSocialAccountAdapter'
+SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_LOGIN_REDIRECT_URL = '/profiles/login/'
+ACCOUNT_INACTIVE_REDIRECT_URL = '/profiles/login/' # DA ME PREUSMJERI NA LOGIN STRANICU DOK NE VERIFIKUJE MAIL
+
+
+
+
+
+SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
