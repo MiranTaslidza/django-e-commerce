@@ -15,9 +15,32 @@ from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes 
 from django.template.loader import render_to_string
+from django.conf import settings
 
 
+# prikaz svih korisnika
+@login_required
+def get_all_profiles(request):
+        
+    if request.user.is_superuser or request.user.is_staff:
+        profiles = Profile.objects.all()
+    else:
+        return redirect('home')  # Ako korisnik nije admin ili moderator, preusmjeri ga na početnu stranicu
+        
+    context = {
+        'profiles': profiles,
+    }
+    return render(request, 'profiles/all_profiles.html', context)
 
+# detalji profila
+@login_required
+def get_profile(request, pk):
+    profile = Profile.objects.get(pk=pk)
+    context ={
+        'profile':profile
+    }
+
+    return render(request, 'profiles/profile.html', context)
 
 # login view
 def user_login(request):
@@ -43,24 +66,6 @@ def user_login(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
-
-
-
-
-    
-    
-
-# detalji profila
-@login_required
-def get_profile(request, pk):
-    profile = Profile.objects.get(pk=pk)
-    context ={
-        'profile':profile
-    }
-
-    return render(request, 'profiles/profile.html', context)
-
-
 
 # registracija korisnika
 def register(request):
@@ -101,8 +106,6 @@ def register(request):
     return render(request, "profiles/register.html", {"form": form})
 
 
-
-
 # kontroiler koji šalje mail korisniku
 def send_email_notification(subject, message, recipient_list):
     try:
@@ -120,8 +123,6 @@ def send_email_notification(subject, message, recipient_list):
 
 
 # kontrioler za verifikaciju korisnika
-from django.conf import settings
-
 def verify_user(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
@@ -176,8 +177,6 @@ def delete_account(request):
         return JsonResponse({"message": "Account deleted"}, status=200)
     return JsonResponse({"error": "Invalid request"}, status=400)
 
-
-
 # promjena passworda
 @login_required
 def change_password(request):
@@ -203,8 +202,6 @@ def change_password(request):
         form = PasswordChangeForm(user=request.user)
     
     return render(request, 'profiles/change_password.html', {'form': form})
-
-
 
 # Kontroler za promenu emaila
 @login_required
@@ -262,8 +259,6 @@ def change_email(request):
 
     return render(request, 'profiles/change_email.html', {'form': form})
 
-
-
 # potvrda na starom emailu
 @login_required
 def confirm_old_email(request, token):
@@ -314,9 +309,6 @@ def confirm_old_email(request, token):
     except BadSignature:
         messages.error(request, "Nevažeći ili istekli token.")
         return redirect('profile', pk=request.user.pk)
-
-
-
 
 # kontroler za poništavanje promjene emaila
 @login_required
@@ -383,4 +375,60 @@ def confirm_new_email(request, token):
     except BadSignature:
         messages.error(request, "Nevažeći ili istekli token.")
         return redirect('profile', pk=request.user.pk)
+
+# Kontroler za dodavanje role korisniku
+@login_required
+def add_role(request, pk):
+    current_user = request.user
+    user = get_object_or_404(User, pk=pk)
+
+    # Provera da li korisnik ima pravo da dodeljuje role
+    if not (current_user.is_superuser or current_user.profile.role == 'admin' or current_user.profile.role == 'moderator'):
+        messages.error(request, "Nemate ovlašćenja da dodajete role korisnicima.")
+        return redirect('home')
+
+    if request.method == 'POST':
+        role = request.POST.get('role')
+
+        # Moderator ne može dodeliti admin rolu
+        if current_user.profile.role == 'moderator' and role == 'admin':
+            messages.error(request, "Moderator ne može dodeliti admin rolu.")
+            return redirect('add-role', pk=user.pk)
+
+        # Definicija dozvoljenih rola po tipu korisnika koji dodeljuje
+        if current_user.profile.role == 'moderator':
+            VALID_ROLES = ['buyer', 'seller']
+        else:
+            VALID_ROLES = ['admin', 'moderator', 'buyer', 'seller']
+
+        # Validacija role
+        if role not in VALID_ROLES:
+            messages.error(request, "Nepoznata rola.")
+            return redirect('profile', pk=user.pk)
+
+        # Promena atributa korisnika u skladu sa rolo
+        if role == 'admin':
+            user.is_staff = True
+            user.is_superuser = True
+        elif role == 'moderator':
+            user.is_staff = True
+            user.is_superuser = False
+        else:
+            user.is_staff = False
+            user.is_superuser = False
+
+        user.save()
+
+        # Ažuriranje role u profilu
+        user.profile.role = role
+        user.profile.save()
+
+        messages.success(request, f"Rola '{role}' je uspešno dodeljena korisniku {user.username}.")
+        return redirect('profile', pk=user.pk)
+
+    context = {
+        'user': user,
+        'is_admin_or_superuser': current_user.is_superuser or current_user.profile.role == 'admin',
+    }
+    return render(request, 'profiles/add_role.html', context)
 

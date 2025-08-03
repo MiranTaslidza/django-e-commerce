@@ -4,6 +4,8 @@ from . import views
 
 
 urlpatterns = [
+    path('', views.get_all_profiles, name='profiles'),
+    path('<int:pk>/', views.get_profile, name='profile'),
     path('login/', views.user_login, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('register/', views.register, name='register'),
@@ -11,7 +13,7 @@ urlpatterns = [
     path("update/", views.update_profile, name="update_profile"),
     path("delete/", views.delete_account, name="delete_account"),
     path('user/change_password/', views.change_password, name='change_password'),
-    path('<int:pk>/', views.get_profile, name='profile'),
+    path('add-role/<int:pk>/', views.add_role, name='add-role'),  # url za dodavanje role korisniku
 
     # url resetiranje loozinke 
     path('password_reset/', auth_views.PasswordResetView.as_view(template_name='profiles/password_reset_form.html', html_email_template_name='profiles/password_reset_email.html'), name='password_reset'), # url za slanje e-maila za reset lozuinke

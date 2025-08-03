@@ -58,6 +58,10 @@
                             <li><a class="dropdown-item" href="{% url 'change_password' %}"><i class="fa-solid fa-key"></i> Change password</a></li>
                             <li><a class="dropdown-item" href="{% url 'change_email' %}"><i class="fa-solid fa-envelope-open-text"></i> Change Email</a></li>
                             <li><a class="dropdown-item" href="{% url 'add_product' %}"><i class="fa-solid fa-plus me-2"></i> Add Product</a></li>
+
+                            {%if request.user.is_staff %}
+                             <li><a class="dropdown-item" href="{% url 'profiles' %}"><i class="fa-solid fa-user-plus"></i> Add role user</a></li>
+                            {%endif%}
                         {%endif%}
                         
 

@@ -1,0 +1,65 @@
+{% extends 'base.html' %} <!-- uvoizim sadržaj base.html -->
+
+{% block title %}Profile {{ profile.user.username }}{% endblock title %} <!-- ovdje se menja title -->
+
+{% load static %} <!-- uvoizim static fajle -->
+
+{% block styles %}
+{% endblock styles %}
+
+<!-- blok za JS static fajlova -->
+{% block scripts %}
+{% endblock scripts %}
+
+{% block content %}
+<div class="container">
+    <h2>Add role user:</h2>
+
+    {% for profile in profiles %}
+        {% if user.is_superuser %}
+            <!-- Superuser vidi sve -->
+            <a class="text-decoration-none text-reset" href="{% url 'add-role' profile.pk %}">
+                <div class="card mb-3" style="width:100%; height: 200px;">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            {% if profile.profile_picture %}
+                                <img src="{{ profile.profile_picture.url }}" class="img-fluid rounded-start" alt="..." style=" height: 200PX; ">
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ profile.user.first_name }} {{ profile.user.last_name }} ({{ profile.user.username }})</h5>
+                                <p class="card-text">User role: {{ profile.role }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>     
+            </a>
+        {% else %}
+            {% if user.is_staff %}
+                {% if not profile.user.is_superuser and not profile.user.is_staff %}
+                    <!-- Staff vidi samo obične korisnike -->
+                    <a class="text-decoration-none text-reset" href="{% url 'add-role' profile.pk %}">
+                        <div class="card mb-3 " style="width:100%; height: 200px;">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    {% if profile.profile_picture %}
+                                        <img src="{{ profile.profile_picture.url }}" class="img-fluid rounded-start" alt="..." style="height: 200px;">
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ profile.user.first_name }} {{ profile.user.last_name }} ({{ profile.user.username }})</h5>
+                                        <p class="card-text">User role: {{ profile.role }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>     
+                    </a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+</div>
+{% endblock content %}
+

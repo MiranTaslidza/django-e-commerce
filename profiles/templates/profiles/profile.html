@@ -1,6 +1,6 @@
 {% extends 'base.html' %} <!-- uvoizim sadržaj base.html -->
 
-{% block title %}Register{% endblock title %} <!-- ovdje se menja title -->
+{% block title %}Profile {{ profile.user.username }}{% endblock title %} <!-- ovdje se menja title -->
 
 {% load static %} <!-- uvoizim static fajle -->
 
@@ -14,12 +14,23 @@
 <!-- blok za sadržaj -->
 {% block content %}
 <div class="profile-container">
+    {% if profile.profile_picture %}
+    <img  class="img-fluid" src="{{ profile.profile_picture.url }}" alt="" style="width: 350px; border-radius: 20%;">
+    {% endif %}
+
     <h2>{{ profile.user.username }}'s Profile</h2>
     <p>Email: {{ profile.user.email }}</p>
-    <p>First Name: {{ profile.first_name }}</p>
-    <p>Last Name: {{ profile.last_name }}</p>
-    <p>Bio: {{ profile.bio }}</p>
-    <p>Location: {{ profile.location }}</p>
-    <p>Website: {{ profile.website }}</p>
+    <p>First Name: {{ profile.user.first_name }}</p>
+    <p>Last Name: {{ profile.user.last_name }}</p>
+    <p>Street: {{ profile.street }}</p>
+    <p>City: {{ profile.city }}</p>
+    <p>State: {{ profile.state }}</p>
+    <p>Phone: {{ profile.phone_number }}</p>
+    <p>Role: {{ profile.role }}</p>
+
+    {% if user.is_staff %} 
+        <a href="{% url 'add-role' profile.pk %}" class="btn btn-success">Add Role</a> <!-- link za dodavanje role -->
+    {% endif %}
 </div>
+
 {% endblock %}

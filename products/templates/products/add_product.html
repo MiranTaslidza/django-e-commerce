@@ -14,6 +14,7 @@
 {% block scripts %}
     <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
     <script src="{% static 'products/js/dropzone.js' %}"></script>
+    <script src="{% static 'products/js/category_short.js' %}"></script>
 {% endblock scripts %}
 
 <!-- blok za sadržaj -->
@@ -40,12 +41,36 @@
 
     <!-- Form -->
     <div class="col-12 col-lg-6 mb-4">
-      <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button class="form-control btn btn-outline-success" type="submit">Add</button>
-      </form>
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  
+  {{ form.category }}
+
+  <p>
+    {{ form.subCategory.label_tag }}
+    <select name="{{ form.subCategory.name }}" id="{{ form.subCategory.id_for_label }}">
+      <option value="">---------</option>
+      {% for sub in form.fields.subCategory.queryset %}
+        <option value="{{ sub.id }}" data-category="{{ sub.category.id }}" {% if form.subCategory.value == sub.id|stringformat:"s" %}selected{% endif %}>
+          {{ sub.name }}
+        </option>
+      {% endfor %}
+    </select>
+  </p>
+
+  <!-- prikaži ostala polja osim category i subCategory -->
+  {% for field in form %}
+    {% if field.name != 'category' and field.name != 'subCategory' %}
+      <p>{{ field.label_tag }} {{ field }}</p>
+    {% endif %}
+  {% endfor %}
+
+  <button class="form-control btn btn-outline-success" type="submit">Add</button>
+</form>
     </div>
   </div>
 </div>
+
+
 {% endblock content %}
+
