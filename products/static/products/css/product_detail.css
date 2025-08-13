@@ -23,26 +23,61 @@ img{
 .img-showcase{
     display: flex;
     width: 100%;
-    height: 500px;
+    height: 500px; /* ostavi ili prilagodi */
     transition: all 0.5s ease;
+    align-items: center;
 }
 .img-showcase img{
     min-width: 100%;
+    height: 100%;
+    object-fit: cover; /* sprječava iskrivljenje i lijepo popunjava prostor */
 }
 .img-select{
     display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    align-items: center;
 }
 .img-item{
-    margin: 0.3rem;
+    width: 72px;            /* promijeni po želji (npr. 60px za manje) */
+    height: 72px;
+    overflow: hidden;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+    display: inline-block;
+    flex: 0 0 auto;
 }
+
+.img-item img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;  /* cover = ispunjava i odsiječe višak, contain = cijela slika, ali možda praznina */
+    display: block;
+}
+
+.img-item a{
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+}
+
 .img-item:nth-child(1),
 .img-item:nth-child(2),
 .img-item:nth-child(3){
     margin-right: 0;
 }
 .img-item:hover{
-    opacity: 0.8;
+    opacity: 0.9;
+    transform: scale(1.02);
+    transition: transform .15s ease, opacity .15s ease;
 }
+
+.img-item.active{
+    outline: 2px solid #256eff;
+    box-shadow: 0 2px 8px rgba(37,110,255,0.12);
+}
+
 .product-content{
     padding: 2rem 1rem;
 }

@@ -9,11 +9,36 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 import os
+import random
 
 # PRIKAZ SVIH PROIZVODA
 def home(request):
     products = Products.objects.filter(is_active=True)
     return render(request, 'products/index.html', {'products': products})
+
+
+
+# PRIKAZ KATEGORIJA
+def category_view(request):
+    categories = Category.objects.filter(is_active=True)
+
+    for category in categories:
+        products = list(
+            Products.objects.filter(
+                category=category,
+                is_active=True,
+                images__is_main=True  # ✅ samo proizvodi koji imaju glavnu sliku
+            )
+            .select_related('category', 'subCategory')
+            .prefetch_related('images')
+            .distinct()  # sprječava duplikate zbog JOIN-a na images
+        )
+
+        # nasumično do 4 proizvoda
+        category.random_products = random.sample(products, min(len(products), 4))
+
+    return render(request, 'products/categories_product.html', {'categories': categories})
+
 
 # dodavanje novog proizvoda
 def add_product_view(request):

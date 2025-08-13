@@ -11,5 +11,6 @@ urlpatterns = [
     path('set-main-image/', views.set_main_image, name='set_main_image'), # postavljanje glavne slike
     path('products/<int:pk>/upload-images/', views.upload_product_images, name='upload_product_images'), # dodavanje novi slika
     path('delete-product/<int:pk>/', views.delete_product, name='delete_product'), # brisanje proizvoda
+    path('categories/', views.category_view, name='categories'), # prikaz kategorija
 
 ]

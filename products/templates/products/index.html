@@ -19,10 +19,11 @@
 
   <div class="row">
 
+
     {% for product in products %}
 
     <!--kartica-->
-    <div class="mt-5 col-xl-2 col-4 index">
+    <div class="mt-5 ms-5 col-xl-2 col-4 index">
       <a href="{% url 'product_detail' product.pk %}">
 
         <div class="cards"> <!-- za sliku -->

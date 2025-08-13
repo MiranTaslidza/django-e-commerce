@@ -1,0 +1,39 @@
+{% extends 'base.html' %} <!-- uvoizim sadržaj base.html -->
+
+{% block title %}Categories{% endblock title %} <!-- ovdje se menja title -->
+
+{% load static %} <!-- uvoizim static fajle -->
+
+{% block styles %}
+{% endblock styles %}
+
+<!-- blok za JS static fajlova -->
+{% block scripts %}
+{% endblock scripts %}
+
+<!-- blok za sadržaj -->
+{% block content %}
+
+
+<div class="row">
+    {% for category in categories %} <!--- prolazimo kroz sve kategorije --->
+    {% if category.random_products|length > 1 %} <!-- provjeravamo da li kategorija ima više od 1 proizvoda -->
+    <div class="col-12 col-sm-5 col-md-4 col-lg-3 col-xl-2 mt-3 me-2 p-3 bg-white">
+        <div class="cards border border-1 border-gray rounded-4 shadow">
+
+            <div class="d-flex flex-wrap justify-content-center">
+        {% for product in category.random_products %}
+            <img src="{{ product.get_main_image.image.url }}" alt="{{ product.name }}" class="img-fluid m-1" style="width:70px; height:70px; object-fit:cover;">
+        {% endfor %}
+            </div>
+
+            <p class="fw-bold text-center text-muted">{{ category.name }}</p>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+
+
+
+{% endblock content %}

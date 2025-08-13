@@ -18,14 +18,15 @@
 {% block content %}
 
 {% if user.is_authenticated %}
-<div class="container p-5">
+<div class="container p-5 ">
     <a class="btn btn-outline-primary ms-5" href="{% url 'updateProduct' product.pk %}">Edit</a>
     <a class="btn btn-outline-danger ms-3" href="{% url 'delete_product' product.pk %}">Delete</a>
 </div>
 {% endif %}
 
+<div class="container mt-5">
 <div class="card-wrapper">
-    <div class="card">
+    <div class="card ">
         <!-- card left image -->
         <div class="product-imgs">
             <div class="img-display">
@@ -99,6 +100,7 @@
             
         </div>
     </div>
+</div>
 </div>
 
 {% endblock content %}

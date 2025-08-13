@@ -32,11 +32,13 @@ class Products(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     GENDR_CHOICES = (
+        ('none', 'None'),
         ('M', 'Male'),
         ('F', 'Female'),
         ('U', 'Unisex'),
     )
     SIZE_CHOICES = (
+        ('none', 'None'),
         ('XS', 'Extra Small'),
         ('S', 'Small'),
         ('M', 'Medium'),
@@ -46,8 +48,8 @@ class Products(models.Model):
         ('XXXL', 'Triple Extra Large'),
         )
     
-    gender = models.CharField(max_length=1, choices=GENDR_CHOICES, blank=True, default='U')
-    size = models.CharField(max_length=10, choices=SIZE_CHOICES, blank=True, null=True, default='M')
+    gender = models.CharField(max_length=10, choices=GENDR_CHOICES, blank=True, default='none')
+    size = models.CharField(max_length=10, choices=SIZE_CHOICES, blank=True, null=True, default='none')
 
     # za prikaz slika
     def get_main_image(self):
