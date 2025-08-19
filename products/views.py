@@ -10,11 +10,28 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 import os
 import random
+from django.db.models import Q
+
 
 # PRIKAZ SVIH PROIZVODA
 def home(request):
     sort = request.GET.get('sort')  # uzima ?sort iz URL-a
+    query = request.GET.get('q')
     products = Products.objects.filter(is_active=True)
+
+    if query:
+        words = query.split()
+        query_filter = Q()
+        for word in words:
+            query_filter &= (
+                Q(name__icontains=word) |
+                Q(description__icontains=word) |
+                Q(subCategory__name__icontains=word) |
+                Q(subCategory__category__name__icontains=word) |
+                Q(size__icontains=word) |
+                Q(color__icontains=word)
+            )
+        products = products.filter(query_filter)
 
     if sort == 'price_asc':
         products = products.order_by('price')
@@ -28,6 +45,7 @@ def home(request):
     return render(request, 'products/index.html', {
         'products': products,
         'current_sort': sort,  # pošaljemo da znamo šta je aktivno u template-u
+        'current_query': query,
     })
 
 
