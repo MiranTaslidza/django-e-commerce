@@ -19,6 +19,7 @@
     {% for category in categories %} <!--- prolazimo kroz sve kategorije --->
     {% if category.random_products|length > 1 %} <!-- provjeravamo da li kategorija ima više od 1 proizvoda -->
     <div class="col-12 col-sm-5 col-md-4 col-lg-3 col-xl-2 mt-3 me-2 p-3 bg-white">
+        <a href="{% url 'subcategory_view' category.id %}">
         <div class="cards border border-1 border-gray rounded-4 shadow">
 
             <div class="d-flex flex-wrap justify-content-center">
@@ -29,6 +30,7 @@
 
             <p class="fw-bold text-center text-muted">{{ category.name }}</p>
         </div>
+    </a>
     </div>
     {% endif %}
     {% endfor %}

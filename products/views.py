@@ -39,6 +39,32 @@ def category_view(request):
 
     return render(request, 'products/categories_product.html', {'categories': categories})
 
+# prikaz sub kategorija
+def subcategory_view(request, category_id):
+    subcategories = SubCategory.objects.filter(category_id=category_id, is_active=True)
+    
+    for subcategory in subcategories:
+        products = list(
+            Products.objects.filter(
+                subCategory=subcategory,
+                is_active=True,
+                images__is_main=True  # ✅ samo proizvodi koji imaju glavnu sliku
+            )
+            .select_related('category', 'subCategory')
+            .prefetch_related('images')
+            .distinct()  # sprječava duplikate zbog JOIN-a na images
+        )
+
+        # prikaz svih proizvoda unutar subkategorije
+        subcategory.products_with_images = products
+
+    return render(request, 'products/subcategories.html', {'subcategories': subcategories})
+
+# prikaz proizvoda po subkategoriji
+def subcategory_products(request, subcategory_id):
+    subcategory = get_object_or_404(SubCategory, id=subcategory_id)
+    products = Products.objects.filter(subCategory=subcategory, is_active=True)
+    return render(request, 'products/subcategory_products.html', { 'subcategory': subcategory, 'products': products})
 
 # dodavanje novog proizvoda
 def add_product_view(request):

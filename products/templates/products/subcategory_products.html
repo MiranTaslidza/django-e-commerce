@@ -1,0 +1,69 @@
+{% extends 'base.html' %} <!-- uvoizim sadržaj base.html -->
+
+{% block title %}{{ subcategory.name }}{% endblock title %} <!-- ovdje se menja title -->
+
+{% load static %} <!-- uvoizim static fajle -->
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'products/css/index.css' %}" type="text/css">
+{% endblock styles %}
+
+<!-- blok za JS static fajlova -->
+{% block scripts %}
+{% endblock scripts %}
+
+<!-- blok za sadržaj -->
+{% block content %}
+
+<div class="container mt-5 overflow-hidden all-prduct card">
+
+  <div class="row">
+
+
+    {% for product in products %}
+
+    <!--kartica-->
+    <div class="mt-5 ms-5 col-xl-2 col-4 index">
+      <a href="{% url 'product_detail' product.pk %}">
+
+        <div class="cards"> <!-- za sliku -->
+          {% with product.get_main_image as main_image %}
+          {% if main_image %}
+          <img src="{{ main_image.image.url }}" alt="{{ product.name }}" class="card-img-top">
+          {% else %}
+          {% with product.images.first as first_image %}
+          {% if first_image %}
+          <img src="{{ first_image.image.url }}" alt="{{ product.name }}" class="card-img-top">
+          {% else %}
+          <img class="default_img" src="{% static 'img/default_image.jpg' %}">
+          {% endif %}
+          {% endwith %}
+          {% endif %}
+          {% endwith %}
+
+          <div class="card-body"> <!-- za detalje -->
+            <hr>
+            <p class="fw-bolder">{{ product.name }}</p>
+            <p>{{ product.price }} $</p>
+
+             <!-- ocjena -->
+            <div class="product-rating mt-5">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+                <span>4.7(21)</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+
+
+{% endblock content %}
+

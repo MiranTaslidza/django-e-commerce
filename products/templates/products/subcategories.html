@@ -1,0 +1,51 @@
+{% extends 'base.html' %} <!-- uvoizim sadržaj base.html -->
+
+{% block title %}Subcategories{% endblock title %} <!-- ovdje se menja title -->
+
+{% load static %} <!-- uvoizim static fajle -->
+
+{% block styles %}
+{% endblock styles %}
+
+<!-- blok za JS static fajlova -->
+{% block scripts %}
+{% endblock scripts %}
+
+<!-- blok za sadržaj -->
+{% block content %}
+
+<div class="container">
+    {% for subcategory in subcategories %}
+        {% if subcategory.products_with_images %}
+            <div class="m-4 p-3 border border-1 border-dark rounded shadow">
+
+                <!-- Naziv subkategorije -->
+                <a href="{% url 'subcategory_products' subcategory.id %}" class="text-decoration-none text-dark">
+                    <p class="fw-bold text-center text-muted">{{ subcategory.name }}</p>
+                </a>
+
+
+                <!-- Horizontalni slider proizvoda -->
+                <div class="d-flex flex-row overflow-auto p-2">
+                    {% for product in subcategory.products_with_images %}
+                    <div class="me-2 text-center">
+                        <a class="text-decoration-none text-dark " href="{% url 'product_detail' product.pk %}" >
+                            {% if product.get_main_image %}
+                                <img src="{{ product.get_main_image.image.url }}"
+                                     alt="{{ product.name }}"
+                                     class="img-fluid border rounded"
+                                     style="width:120px; height:120px; object-fit:cover;">
+                            {% endif %}
+                            <p class="small mt-1">{{ product.name }}</p>
+                        </a>
+                        </div>
+
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+
+{% endblock %}
