@@ -13,8 +13,23 @@ import random
 
 # PRIKAZ SVIH PROIZVODA
 def home(request):
+    sort = request.GET.get('sort')  # uzima ?sort iz URL-a
     products = Products.objects.filter(is_active=True)
-    return render(request, 'products/index.html', {'products': products})
+
+    if sort == 'price_asc':
+        products = products.order_by('price')
+    elif sort == 'price_desc':
+        products = products.order_by('-price')
+    elif sort == 'date_asc':
+        products = products.order_by('created_at')
+    elif sort == 'date_desc':
+        products = products.order_by('-created_at')
+
+    return render(request, 'products/index.html', {
+        'products': products,
+        'current_sort': sort,  # pošaljemo da znamo šta je aktivno u template-u
+    })
+
 
 
 
@@ -63,8 +78,24 @@ def subcategory_view(request, category_id):
 # prikaz proizvoda po subkategoriji
 def subcategory_products(request, subcategory_id):
     subcategory = get_object_or_404(SubCategory, id=subcategory_id)
+    sort = request.GET.get('sort')
     products = Products.objects.filter(subCategory=subcategory, is_active=True)
-    return render(request, 'products/subcategory_products.html', { 'subcategory': subcategory, 'products': products})
+
+    if sort == 'price_asc':
+        products = products.order_by('price')
+    elif sort == 'price_desc':
+        products = products.order_by('-price')
+    elif sort == 'date_asc':
+        products = products.order_by('created_at')
+    elif sort == 'date_desc':
+        products = products.order_by('-created_at')
+
+
+    return render(request, 'products/subcategory_products.html', {
+        'subcategory': subcategory,
+        'products': products,
+        'current_sort': sort,
+    })
 
 # dodavanje novog proizvoda
 def add_product_view(request):
