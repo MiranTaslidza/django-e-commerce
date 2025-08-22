@@ -13,16 +13,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',  include('products.urls')),  # Redirect root URL to admin
     path('profiles/', include('profiles.urls')),    
-        # samo hook ovi za allauth OAuth
-    #path('accounts/', include('allauth.socialaccount.urls')),
-        # *** OVO MORA BITI UKLJUČENO ***
+    path('cart/', include('cart.urls')),
     
     # preusmjeri inactive na tvoj login
     path('accounts/inactive/', RedirectView.as_view(url='/profiles/login/?account_inactive')),
-
-    re_path(r'^accounts/confirm-email/(?P<key>[-:\w]+)/$', verify_user, name='account_confirm_email'), path('accounts/', include('allauth.urls')), # ovo sam uključio
-    
-    
+    re_path(r'^accounts/confirm-email/(?P<key>[-:\w]+)/$', verify_user, name='account_confirm_email'), path('accounts/', include('allauth.urls')),
     path('accounts/', include('allauth.urls')),
 
 ]
